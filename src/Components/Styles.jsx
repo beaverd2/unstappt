@@ -1,10 +1,8 @@
 import { Flex, Heading } from '@chakra-ui/layout';
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import { Container, Select, useBreakpointValue } from '@chakra-ui/react';
-import { Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
-  ArcElement,
   Title,
   Tooltip,
   Legend,
@@ -17,7 +15,6 @@ import LegendElement from './LegendElement';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import randomColor from 'randomcolor';
 ChartJS.register(ChartDataLabels);
-// ChartJS.register(ArcElement, Tooltip, Legend);
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -29,12 +26,12 @@ ChartJS.register(
 
 const Styles = ({ beers }) => {
   const [style, setStyle] = useState('short');
-  const mapUnsorted = beers.items
+  const mapUnsorted = beers
     .map(beer => beer.beer.beer_style)
     // eslint-disable-next-line no-sequences
     .reduce((cnt, cur) => ((cnt[cur] = cnt[cur] + 1 || 1), cnt), {});
 
-  const mapShortUnsorted = beers.items
+  const mapShortUnsorted = beers
     .map(beer => beer.beer.beer_style.split('-')[0])
     // eslint-disable-next-line no-sequences
     .reduce((cnt, cur) => ((cnt[cur] = cnt[cur] + 1 || 1), cnt), {});
@@ -48,9 +45,6 @@ const Styles = ({ beers }) => {
   const styles = style === 'short' ? Object.keys(mapShort) : Object.keys(map);
   const count =
     style === 'short' ? Object.values(mapShort) : Object.values(map);
-  const colors = styles.map(
-    () => '#' + Math.floor(Math.random() * 16777215).toString(16)
-  );
 
   const colors2 = randomColor({
     hue: 'random',
@@ -74,7 +68,6 @@ const Styles = ({ beers }) => {
             <Heading size="sm">Styles</Heading>
             <Select
               maxW={28}
-              // placeholder="Short style"
               size="xs"
               variant="filled"
               onChange={handleSelect}
@@ -84,49 +77,6 @@ const Styles = ({ beers }) => {
             </Select>
           </Flex>
           <Flex alignSelf="center" w="100%">
-            {/* <Doughnut
-              options={{
-                responsive: true,
-                layout: {
-                  padding: 16,
-                },
-
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                  datalabels: {
-                    backgroundColor: function (context) {
-                      return context.dataset.backgroundColor;
-                    },
-                    borderColor: 'white',
-                    borderRadius: 25,
-                    borderWidth: 2,
-                    color: 'white',
-                    anchor: 'end',
-                    font: {
-                      weight: 'bold',
-                    },
-                    padding: 5,
-                  },
-                },
-              }}
-              data={{
-                labels: styles,
-                datasets: [
-                  {
-                    data: count,
-                    backgroundColor: colors2,
-                    hoverOffset: 0,
-                    borderColor: colors2,
-                    borderWidth: 1,
-                    datalabels: {
-                      // anchor: 'end',
-                    },
-                  },
-                ],
-              }}
-            /> */}
             <Bar
               height={300}
               options={{
@@ -149,6 +99,13 @@ const Styles = ({ beers }) => {
                     grid: { display: false },
                   },
                 },
+                yAxes: [
+                  {
+                    ticks: {
+                      precision: 0,
+                    },
+                  },
+                ],
               }}
               data={{
                 labels: styles,
@@ -187,4 +144,4 @@ const Styles = ({ beers }) => {
   );
 };
 
-export default Styles;
+export default memo(Styles);

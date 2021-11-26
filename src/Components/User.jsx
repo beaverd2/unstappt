@@ -1,5 +1,5 @@
-import { Flex } from '@chakra-ui/layout';
-import React from 'react';
+import { Flex, Link } from '@chakra-ui/layout';
+import React, { memo } from 'react';
 import { Container, Avatar, Text } from '@chakra-ui/react';
 import { ChevronRightIcon } from '@chakra-ui/icons';
 
@@ -8,7 +8,12 @@ const User = ({ user }) => {
     <Flex>
       <Container maxW="container.sm">
         <Flex bgColor="white" p={2} shadow="base">
-          <Avatar size="lg" marginRight={2} alignSelf="center" />
+          <Avatar
+            src={user.user_avatar}
+            size="lg"
+            marginRight={2}
+            alignSelf="center"
+          />
           <Flex flexGrow="1" flexDir="column">
             <Flex justifyContent="space-between">
               <Flex flexDir="column">
@@ -39,7 +44,13 @@ const User = ({ user }) => {
               <Text size="xs" color="gray.500" maxW={40} isTruncated>
                 {user.bio}
               </Text>
-              <ChevronRightIcon w={6} h={6} />
+              <Link
+                target="_blank"
+                rel="noopener noreferrer"
+                href={'https://untappd.com/user/' + user.user_name}
+              >
+                <ChevronRightIcon w={6} h={6} />
+              </Link>
             </Flex>
           </Flex>
         </Flex>
@@ -48,4 +59,4 @@ const User = ({ user }) => {
   );
 };
 
-export default User;
+export default memo(User);

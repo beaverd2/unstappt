@@ -1,5 +1,5 @@
 import { Flex, Heading } from '@chakra-ui/layout';
-import React from 'react';
+import React, { memo } from 'react';
 import { Container, Select } from '@chakra-ui/react';
 import { Bar } from 'react-chartjs-2';
 import {
@@ -24,7 +24,7 @@ ChartJS.register(
 const DrinkingPattern = ({ beers }) => {
   const daysOfWeek = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 };
 
-  const map = beers.items
+  const map = beers
     .map(beer => beer.recent_created_at.split(',')[0])
     // eslint-disable-next-line no-sequences
     .reduce((cnt, cur) => ((cnt[cur] = cnt[cur] + 1 || 1), cnt), {});
@@ -95,4 +95,4 @@ const DrinkingPattern = ({ beers }) => {
   );
 };
 
-export default DrinkingPattern;
+export default memo(DrinkingPattern);
