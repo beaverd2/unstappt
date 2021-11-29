@@ -15,7 +15,11 @@ import DrinkingPattern from './Components/DrinkingPattern';
 import axios from 'axios';
 import TopBeers from './Components/TopBeers';
 import TopCountries from './Components/TopCountries';
-import TopStates from './Components/TopStates';
+import TopRegions from './Components/TopRegions';
+import TopBreweries from './Components/TopBreweries';
+import TopStyles from './Components/TopStyles';
+import dayjs from 'dayjs';
+import Statistics from './Components/Statistics';
 
 function App() {
   const [beers, setBeers] = useState(beers1.response.beers.items);
@@ -47,35 +51,38 @@ function App() {
     }
   };
   const fetchAll = async username => {
+    const now = dayjs().format('YYYY-MM-DD');
+    const weekAgo = dayjs().subtract(7, 'days').format('YYYY-MM-DD');
     const allBeers = await fetchBeers(
-      `https://api.untappd.com/v4/user/beers/${username}?limit=50`
+      `https://api.untappd.com/v4/user/beers/${username}?limit=50&start_date=${weekAgo}&end_date=${now}`
     );
     const user = await fetchUser(username);
     console.log('fetchAll', allBeers, user);
     setUser(user);
     setBeers(allBeers);
   };
-
   return (
     <ChakraProvider theme={theme}>
-      <Flex bg="gray.100" flexDir="column">
+      <Flex bg="gray.100" flexDir="column" pb={4}>
         <Header fetchAll={fetchAll} />
         <User user={user} />
         <Container maxW="container.sm">
           <Select
             maxW={24}
-            placeholder="last 50"
+            placeholder="last week"
             size="xs"
             bg="white"
             marginTop={4}
             marginLeft="auto"
           />
         </Container>
-        <Styles beers={beers} />
-        <DrinkingPattern beers={beers} />
+        <Statistics beers={beers} />
         <TopBeers beers={beers} />
+        <TopBreweries beers={beers} />
+        <TopStyles beers={beers} />
         <TopCountries beers={beers} />
-        <TopStates beers={beers} />
+        <TopRegions beers={beers} />
+        <DrinkingPattern beers={beers} />
       </Flex>
     </ChakraProvider>
   );

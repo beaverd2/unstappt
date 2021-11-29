@@ -4,51 +4,54 @@ import { Container, Select, Button } from '@chakra-ui/react';
 import TopElement from './TopElement';
 import { AnimatePresence } from 'framer-motion';
 
-const TopCountries = ({ beers }) => {
+const TopBreweries = ({ beers }) => {
   const [filter, setFilter] = useState('count');
   const [isCompact, setIsCompact] = useState(true);
-  const [countries, setCountries] = useState([]);
+  const [breweries, setBreweries] = useState([]);
 
   const handleSelect = e => {
     setFilter(e.target.value);
     e.target.value === 'count'
-      ? setCountries(countries.sort((a, b) => (a.count < b.count && 1) || -1))
-      : setCountries(
-          countries.sort((a, b) => (a.avgRating < b.avgRating && 1) || -1)
+      ? setBreweries(breweries.sort((a, b) => (a.count < b.count && 1) || -1))
+      : setBreweries(
+          breweries.sort((a, b) => (a.avgRating < b.avgRating && 1) || -1)
         );
   };
   const handleIsCompact = () => {
     setIsCompact(false);
   };
+
   useEffect(() => {
     setIsCompact(true);
     setFilter('count');
-    const countries = Object.values(
+    const breweries = Object.values(
       beers
         .map(beer => {
           return {
-            country_name: beer.brewery.country_name,
+            brewery_name: beer.brewery.brewery_name,
+            brewery_label: beer.brewery.brewery_label,
             rating: beer.rating_score,
           };
         })
-        .reduce((obj, { country_name, rating }) => {
-          if (obj[country_name] === undefined)
-            obj[country_name] = {
-              country_name: country_name,
+        .reduce((obj, { brewery_name, brewery_label, rating }) => {
+          if (obj[brewery_name] === undefined)
+            obj[brewery_name] = {
+              brewery_name: brewery_name,
+              brewery_label: brewery_label,
               sumRating: rating,
               avgRating: rating,
               count: 1,
             };
           else {
-            obj[country_name].count++;
-            obj[country_name].sumRating += rating;
-            obj[country_name].avgRating =
-              obj[country_name].sumRating / obj[country_name].count;
+            obj[brewery_name].count++;
+            obj[brewery_name].sumRating += rating;
+            obj[brewery_name].avgRating =
+              obj[brewery_name].sumRating / obj[brewery_name].count;
           }
           return obj;
         }, {})
     );
-    setCountries(countries.sort((a, b) => (a.count < b.count && 1) || -1));
+    setBreweries(breweries.sort((a, b) => (a.count < b.count && 1) || -1));
   }, [beers]);
 
   return (
@@ -60,7 +63,7 @@ const TopCountries = ({ beers }) => {
             alignItems="center"
             marginBottom={2}
           >
-            <Heading size="sm">Top Countries</Heading>
+            <Heading size="sm">Top Breweries</Heading>
             <Select
               maxW={28}
               size="xs"
@@ -74,31 +77,33 @@ const TopCountries = ({ beers }) => {
           </Flex>
           <AnimatePresence>
             {isCompact
-              ? countries.slice(0, 5).map(country => (
+              ? breweries.slice(0, 5).map(brewery => (
                   <TopElement
-                    key={country.country_name}
+                    key={brewery.brewery_name}
                     data={{
-                      name: country.country_name,
-                      count: country.count,
-                      avgRating: country.avgRating,
+                      img: brewery.brewery_label,
+                      name: brewery.brewery_name,
+                      count: brewery.count,
+                      avgRating: brewery.avgRating,
                     }}
                     filter={filter}
                     type="brewery"
                   />
                 ))
-              : countries.map(country => (
+              : breweries.map(brewery => (
                   <TopElement
-                    key={country.country_name}
+                    key={brewery.brewery_name}
                     data={{
-                      name: country.country_name,
-                      count: country.count,
-                      avgRating: country.avgRating,
+                      img: brewery.brewery_label,
+                      name: brewery.brewery_name,
+                      count: brewery.count,
+                      avgRating: brewery.avgRating,
                     }}
                     filter={filter}
                   />
                 ))}
           </AnimatePresence>
-          {isCompact && countries.length > 5 && (
+          {isCompact && breweries.length > 5 && (
             <Button
               onClick={handleIsCompact}
               size="xs"
@@ -115,4 +120,4 @@ const TopCountries = ({ beers }) => {
   );
 };
 
-export default memo(TopCountries);
+export default memo(TopBreweries);

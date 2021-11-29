@@ -4,17 +4,17 @@ import { Container, Select, Button } from '@chakra-ui/react';
 import TopElement from './TopElement';
 import { AnimatePresence } from 'framer-motion';
 
-const TopCountries = ({ beers }) => {
+const TopRegions = ({ beers }) => {
   const [filter, setFilter] = useState('count');
   const [isCompact, setIsCompact] = useState(true);
-  const [countries, setCountries] = useState([]);
+  const [regions, setRegions] = useState([]);
 
   const handleSelect = e => {
     setFilter(e.target.value);
     e.target.value === 'count'
-      ? setCountries(countries.sort((a, b) => (a.count < b.count && 1) || -1))
-      : setCountries(
-          countries.sort((a, b) => (a.avgRating < b.avgRating && 1) || -1)
+      ? setRegions(regions.sort((a, b) => (a.count < b.count && 1) || -1))
+      : setRegions(
+          regions.sort((a, b) => (a.avgRating < b.avgRating && 1) || -1)
         );
   };
   const handleIsCompact = () => {
@@ -23,32 +23,35 @@ const TopCountries = ({ beers }) => {
   useEffect(() => {
     setIsCompact(true);
     setFilter('count');
-    const countries = Object.values(
+    const regions = Object.values(
       beers
         .map(beer => {
           return {
-            country_name: beer.brewery.country_name,
+            region_name:
+              beer.brewery.location.brewery_state === ''
+                ? 'Other'
+                : beer.brewery.location.brewery_state,
             rating: beer.rating_score,
           };
         })
-        .reduce((obj, { country_name, rating }) => {
-          if (obj[country_name] === undefined)
-            obj[country_name] = {
-              country_name: country_name,
+        .reduce((obj, { region_name, rating }) => {
+          if (obj[region_name] === undefined)
+            obj[region_name] = {
+              region_name: region_name,
               sumRating: rating,
               avgRating: rating,
               count: 1,
             };
           else {
-            obj[country_name].count++;
-            obj[country_name].sumRating += rating;
-            obj[country_name].avgRating =
-              obj[country_name].sumRating / obj[country_name].count;
+            obj[region_name].count++;
+            obj[region_name].sumRating += rating;
+            obj[region_name].avgRating =
+              obj[region_name].sumRating / obj[region_name].count;
           }
           return obj;
         }, {})
     );
-    setCountries(countries.sort((a, b) => (a.count < b.count && 1) || -1));
+    setRegions(regions.sort((a, b) => (a.count < b.count && 1) || -1));
   }, [beers]);
 
   return (
@@ -60,7 +63,7 @@ const TopCountries = ({ beers }) => {
             alignItems="center"
             marginBottom={2}
           >
-            <Heading size="sm">Top Countries</Heading>
+            <Heading size="sm">Top Regions/States</Heading>
             <Select
               maxW={28}
               size="xs"
@@ -74,31 +77,31 @@ const TopCountries = ({ beers }) => {
           </Flex>
           <AnimatePresence>
             {isCompact
-              ? countries.slice(0, 5).map(country => (
+              ? regions.slice(0, 5).map(region => (
                   <TopElement
-                    key={country.country_name}
+                    key={region.region_name}
                     data={{
-                      name: country.country_name,
-                      count: country.count,
-                      avgRating: country.avgRating,
+                      name: region.region_name,
+                      count: region.count,
+                      avgRating: region.avgRating,
                     }}
                     filter={filter}
                     type="brewery"
                   />
                 ))
-              : countries.map(country => (
+              : regions.map(region => (
                   <TopElement
-                    key={country.country_name}
+                    key={region.region_name}
                     data={{
-                      name: country.country_name,
-                      count: country.count,
-                      avgRating: country.avgRating,
+                      name: region.region_name,
+                      count: region.count,
+                      avgRating: region.avgRating,
                     }}
                     filter={filter}
                   />
                 ))}
           </AnimatePresence>
-          {isCompact && countries.length > 5 && (
+          {isCompact && regions.length > 5 && (
             <Button
               onClick={handleIsCompact}
               size="xs"
@@ -115,4 +118,4 @@ const TopCountries = ({ beers }) => {
   );
 };
 
-export default memo(TopCountries);
+export default memo(TopRegions);
