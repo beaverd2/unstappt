@@ -1,63 +1,165 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Flex } from '@chakra-ui/layout';
 import { Container, Text } from '@chakra-ui/react';
+import { Skeleton } from '@chakra-ui/react';
 
-const Statistics = ({ beers }) => {
-  console.log('stats', beers.length);
-  console.log('stats', beers);
-  const beersCount = beers.length;
-  const stylesCount = [...new Set(beers.map(beer => beer.beer.beer_style))]
-    .length;
-  const breweriesCount = [
-    ...new Set(beers.map(beer => beer.brewery.brewery_name)),
-  ].length;
-  const countriesCount = [
-    ...new Set(beers.map(beer => beer.brewery.country_name)),
-  ].length;
-  const avgRating = (
-    beers.reduce((acc, cur) => acc + cur.rating_score, 0) / beers.length
-  ).toPrecision(3);
-  console.log(avgRating);
+const Statistics = ({ beers, isLoading }) => {
+  const [statistics, setStatistics] = useState(null);
+  useEffect(() => {
+    if (beers) {
+      setStatistics({
+        beersCount: beers.length,
+        stylesCount: [...new Set(beers.map(beer => beer.beer.beer_style))]
+          .length,
+        breweriesCount: [
+          ...new Set(beers.map(beer => beer.brewery.brewery_name)),
+        ].length,
+        countriesCount: [
+          ...new Set(beers.map(beer => beer.brewery.country_name)),
+        ].length,
+        avgRating: (
+          beers.reduce((acc, cur) => acc + cur.rating_score, 0) / beers.length
+        ).toPrecision(3),
+      });
+    }
+  }, [beers]);
   return (
     <Flex>
       <Container maxW="container.sm">
-        <Flex
-          bgColor="white"
-          p={2}
-          shadow="base"
-          justifyContent="space-between"
-          flexWrap="wrap"
-        >
-          <Flex flexDir="column" alignItems="center">
-            <Text size="sm">Check-ins</Text>
-            <Text size="sm" fontWeight="700">
-              {beersCount}
-            </Text>
-          </Flex>
-          <Flex flexDir="column" alignItems="center">
-            <Text size="sm">Styles</Text>
-            <Text size="sm" fontWeight="700">
-              {stylesCount}
-            </Text>
-          </Flex>
-          <Flex flexDir="column" alignItems="center">
-            <Text size="sm">Breweries</Text>
-            <Text size="sm" fontWeight="700">
-              {breweriesCount}
-            </Text>
-          </Flex>
-          <Flex flexDir="column" alignItems="center">
-            <Text size="sm">Countries</Text>
-            <Text size="sm" fontWeight="700">
-              {countriesCount}
-            </Text>
-          </Flex>
-          <Flex flexDir="column" alignItems="center">
-            <Text size="sm">Avg Rating</Text>
-            <Text size="sm" fontWeight="700">
-              {avgRating}
-            </Text>
-          </Flex>
+        <Flex justifyContent="space-between" flexWrap="wrap" gridGap={4}>
+          {statistics && !isLoading && (
+            <>
+              <Flex
+                flexDir="column"
+                alignItems="center"
+                bgColor="white"
+                p={2}
+                shadow="base"
+                flexBasis="40%"
+                textAlign="center"
+              >
+                <Text fontSize="lg">Check-ins</Text>
+                <Text fontSize="lg" fontWeight="700">
+                  {statistics.beersCount}
+                </Text>
+              </Flex>
+              <Flex
+                flexDir="column"
+                alignItems="center"
+                bgColor="white"
+                p={2}
+                shadow="base"
+                flexBasis="40%"
+                textAlign="center"
+              >
+                <Text fontSize="lg">Styles</Text>
+                <Text fontSize="lg" fontWeight="700">
+                  {statistics.stylesCount}
+                </Text>
+              </Flex>
+              <Flex
+                flexDir="column"
+                alignItems="center"
+                bgColor="white"
+                p={2}
+                shadow="base"
+                flexBasis="40%"
+                textAlign="center"
+              >
+                <Text fontSize="lg">Breweries</Text>
+                <Text fontSize="lg" fontWeight="700">
+                  {statistics.breweriesCount}
+                </Text>
+              </Flex>
+              <Flex
+                flexDir="column"
+                alignItems="center"
+                bgColor="white"
+                p={2}
+                shadow="base"
+                flexBasis="40%"
+                textAlign="center"
+              >
+                <Text fontSize="lg">Countries</Text>
+                <Text fontSize="lg" fontWeight="700">
+                  {statistics.countriesCount}
+                </Text>
+              </Flex>
+              <Flex
+                flexDir="column"
+                alignItems="center"
+                bgColor="white"
+                p={2}
+                shadow="base"
+                flexBasis="40%"
+                textAlign="center"
+              >
+                <Text fontSize="lg">Avg Rating</Text>
+                <Text fontSize="lg" fontWeight="700">
+                  {statistics.avgRating}
+                </Text>
+              </Flex>
+            </>
+          )}
+          {isLoading && (
+            <>
+              <Flex
+                flexDir="column"
+                alignItems="center"
+                bgColor="white"
+                p={2}
+                shadow="base"
+                flexBasis="40%"
+                textAlign="center"
+              >
+                <Skeleton h={14} w="100%" />
+              </Flex>
+              <Flex
+                flexDir="column"
+                alignItems="center"
+                bgColor="white"
+                p={2}
+                shadow="base"
+                flexBasis="40%"
+                textAlign="center"
+              >
+                <Skeleton h={14} w="100%" />
+              </Flex>
+              <Flex
+                flexDir="column"
+                alignItems="center"
+                bgColor="white"
+                p={2}
+                shadow="base"
+                flexBasis="40%"
+                textAlign="center"
+              >
+                <Skeleton h={14} w="100%" />
+              </Flex>
+              <Flex
+                flexDir="column"
+                alignItems="center"
+                bgColor="white"
+                p={2}
+                shadow="base"
+                flexBasis="40%"
+                textAlign="center"
+              >
+                <Skeleton h={14} w="100%" />
+              </Flex>
+              <Flex
+                flexDir="column"
+                alignItems="center"
+                bgColor="white"
+                p={2}
+                shadow="base"
+                flexBasis="40%"
+                textAlign="center"
+              >
+                <Skeleton h={14} w="100%" />
+              </Flex>
+            </>
+          )}
         </Flex>
       </Container>
     </Flex>

@@ -4,7 +4,7 @@ import { Container, Select, Button } from '@chakra-ui/react';
 import TopElement from './TopElement';
 import { AnimatePresence } from 'framer-motion';
 
-const TopRegions = ({ beers }) => {
+const TopRegions = ({ beers, isLoading }) => {
   const [filter, setFilter] = useState('count');
   const [isCompact, setIsCompact] = useState(true);
   const [regions, setRegions] = useState([]);
@@ -23,37 +23,39 @@ const TopRegions = ({ beers }) => {
   useEffect(() => {
     setIsCompact(true);
     setFilter('count');
-    const regions = Object.values(
-      beers
-        .map(beer => {
-          return {
-            region_name:
-              beer.brewery.location.brewery_state === ''
-                ? 'Other'
-                : beer.brewery.location.brewery_state,
-            rating: beer.rating_score,
-          };
-        })
-        .reduce((obj, { region_name, rating }) => {
-          if (obj[region_name] === undefined)
-            obj[region_name] = {
-              region_name: region_name,
-              sumRating: rating,
-              avgRating: rating,
-              count: 1,
+    if (beers) {
+      const regions = Object.values(
+        beers
+          .map(beer => {
+            return {
+              region_name:
+                beer.brewery.location.brewery_state === ''
+                  ? 'Other'
+                  : beer.brewery.location.brewery_state,
+              rating: beer.rating_score,
             };
-          else {
-            obj[region_name].count++;
-            obj[region_name].sumRating += rating;
-            obj[region_name].avgRating =
-              obj[region_name].sumRating / obj[region_name].count;
-          }
-          return obj;
-        }, {})
-    );
-    setRegions(regions.sort((a, b) => (a.count < b.count && 1) || -1));
+          })
+          .reduce((obj, { region_name, rating }) => {
+            if (obj[region_name] === undefined)
+              obj[region_name] = {
+                region_name: region_name,
+                sumRating: rating,
+                avgRating: rating,
+                count: 1,
+              };
+            else {
+              obj[region_name].count++;
+              obj[region_name].sumRating += rating;
+              obj[region_name].avgRating =
+                obj[region_name].sumRating / obj[region_name].count;
+            }
+            return obj;
+          }, {})
+      );
+      setRegions(regions.sort((a, b) => (a.count < b.count && 1) || -1));
+    }
   }, [beers]);
-
+  console.log('regions', regions);
   return (
     <Flex marginTop={4}>
       <Container maxW="container.sm">
@@ -70,13 +72,14 @@ const TopRegions = ({ beers }) => {
               variant="filled"
               onChange={handleSelect}
               value={filter}
+              disabled={isLoading}
             >
               <option value="count">By Count</option>
               <option value="rating">By Rating</option>
             </Select>
           </Flex>
           <AnimatePresence>
-            {isCompact
+            {regions && !isLoading && isCompact
               ? regions.slice(0, 5).map(region => (
                   <TopElement
                     key={region.region_name}
@@ -86,7 +89,6 @@ const TopRegions = ({ beers }) => {
                       avgRating: region.avgRating,
                     }}
                     filter={filter}
-                    type="brewery"
                   />
                 ))
               : regions.map(region => (
@@ -100,8 +102,12 @@ const TopRegions = ({ beers }) => {
                     filter={filter}
                   />
                 ))}
+            {isLoading &&
+              Array.from(Array(5).keys()).map(region => (
+                <TopElement key={region} skeleton />
+              ))}
           </AnimatePresence>
-          {isCompact && regions.length > 5 && (
+          {!isLoading && isCompact && regions.length > 5 && (
             <Button
               onClick={handleIsCompact}
               size="xs"

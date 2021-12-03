@@ -4,7 +4,7 @@ import { Container, Select, Button } from '@chakra-ui/react';
 import TopElement from './TopElement';
 import { AnimatePresence } from 'framer-motion';
 
-const TopBreweries = ({ beers }) => {
+const TopBreweries = ({ beers, isLoading }) => {
   const [filter, setFilter] = useState('count');
   const [isCompact, setIsCompact] = useState(true);
   const [breweries, setBreweries] = useState([]);
@@ -24,34 +24,37 @@ const TopBreweries = ({ beers }) => {
   useEffect(() => {
     setIsCompact(true);
     setFilter('count');
-    const breweries = Object.values(
-      beers
-        .map(beer => {
-          return {
-            brewery_name: beer.brewery.brewery_name,
-            brewery_label: beer.brewery.brewery_label,
-            rating: beer.rating_score,
-          };
-        })
-        .reduce((obj, { brewery_name, brewery_label, rating }) => {
-          if (obj[brewery_name] === undefined)
-            obj[brewery_name] = {
-              brewery_name: brewery_name,
-              brewery_label: brewery_label,
-              sumRating: rating,
-              avgRating: rating,
-              count: 1,
+    if (beers) {
+      const breweries = Object.values(
+        beers
+          .map(beer => {
+            return {
+              brewery_name: beer.brewery.brewery_name,
+              brewery_label: beer.brewery.brewery_label,
+              rating: beer.rating_score,
             };
-          else {
-            obj[brewery_name].count++;
-            obj[brewery_name].sumRating += rating;
-            obj[brewery_name].avgRating =
-              obj[brewery_name].sumRating / obj[brewery_name].count;
-          }
-          return obj;
-        }, {})
-    );
-    setBreweries(breweries.sort((a, b) => (a.count < b.count && 1) || -1));
+          })
+          .reduce((obj, { brewery_name, brewery_label, rating }) => {
+            if (obj[brewery_name] === undefined)
+              obj[brewery_name] = {
+                brewery_name: brewery_name,
+                brewery_label: brewery_label,
+                sumRating: rating,
+                avgRating: rating,
+                count: 1,
+              };
+            else {
+              obj[brewery_name].count++;
+              obj[brewery_name].sumRating += rating;
+              obj[brewery_name].avgRating =
+                obj[brewery_name].sumRating / obj[brewery_name].count;
+            }
+            return obj;
+          }, {})
+      );
+
+      setBreweries(breweries.sort((a, b) => (a.count < b.count && 1) || -1));
+    }
   }, [beers]);
 
   return (
@@ -70,13 +73,14 @@ const TopBreweries = ({ beers }) => {
               variant="filled"
               onChange={handleSelect}
               value={filter}
+              disabled={isLoading}
             >
               <option value="count">By Count</option>
               <option value="rating">By Rating</option>
             </Select>
           </Flex>
           <AnimatePresence>
-            {isCompact
+            {breweries && !isLoading && isCompact
               ? breweries.slice(0, 5).map(brewery => (
                   <TopElement
                     key={brewery.brewery_name}
@@ -87,7 +91,6 @@ const TopBreweries = ({ beers }) => {
                       avgRating: brewery.avgRating,
                     }}
                     filter={filter}
-                    type="brewery"
                   />
                 ))
               : breweries.map(brewery => (
@@ -102,8 +105,12 @@ const TopBreweries = ({ beers }) => {
                     filter={filter}
                   />
                 ))}
+            {isLoading &&
+              Array.from(Array(5).keys()).map(brewery => (
+                <TopElement key={brewery} skeleton />
+              ))}
           </AnimatePresence>
-          {isCompact && breweries.length > 5 && (
+          {!isLoading && isCompact && breweries.length > 5 && (
             <Button
               onClick={handleIsCompact}
               size="xs"

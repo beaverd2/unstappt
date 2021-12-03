@@ -14,9 +14,10 @@ const Header = ({ fetchAll }) => {
     setSearch('');
   };
   return (
-    <Box bgColor="#FFBA2E" w="100%" marginBottom={4}>
+    <Box bgColor="#FFBA2E" w="100%">
       <Container maxW="container.sm">
         <Flex height={12} alignItems="center" justifyContent="space-between">
+          {}
           <Heading>Unstappt</Heading>
           <form onSubmit={handleSubmit}>
             <Input

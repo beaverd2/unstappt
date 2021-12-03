@@ -4,7 +4,7 @@ import { Container, Select, Button } from '@chakra-ui/react';
 import TopElement from './TopElement';
 import { AnimatePresence } from 'framer-motion';
 
-const TopCountries = ({ beers }) => {
+const TopCountries = ({ beers, isLoading }) => {
   const [filter, setFilter] = useState('count');
   const [isCompact, setIsCompact] = useState(true);
   const [countries, setCountries] = useState([]);
@@ -23,34 +23,37 @@ const TopCountries = ({ beers }) => {
   useEffect(() => {
     setIsCompact(true);
     setFilter('count');
-    const countries = Object.values(
-      beers
-        .map(beer => {
-          return {
-            country_name: beer.brewery.country_name,
-            rating: beer.rating_score,
-          };
-        })
-        .reduce((obj, { country_name, rating }) => {
-          if (obj[country_name] === undefined)
-            obj[country_name] = {
-              country_name: country_name,
-              sumRating: rating,
-              avgRating: rating,
-              count: 1,
+    if (beers) {
+      const countries = Object.values(
+        beers
+          .map(beer => {
+            return {
+              country_name: beer.brewery.country_name,
+              rating: beer.rating_score,
             };
-          else {
-            obj[country_name].count++;
-            obj[country_name].sumRating += rating;
-            obj[country_name].avgRating =
-              obj[country_name].sumRating / obj[country_name].count;
-          }
-          return obj;
-        }, {})
-    );
-    setCountries(countries.sort((a, b) => (a.count < b.count && 1) || -1));
-  }, [beers]);
+          })
+          .reduce((obj, { country_name, rating }) => {
+            if (obj[country_name] === undefined)
+              obj[country_name] = {
+                country_name: country_name,
+                sumRating: rating,
+                avgRating: rating,
+                count: 1,
+              };
+            else {
+              obj[country_name].count++;
+              obj[country_name].sumRating += rating;
+              obj[country_name].avgRating =
+                obj[country_name].sumRating / obj[country_name].count;
+            }
+            return obj;
+          }, {})
+      );
 
+      setCountries(countries.sort((a, b) => (a.count < b.count && 1) || -1));
+    }
+  }, [beers]);
+  console.log('countries', countries);
   return (
     <Flex marginTop={4}>
       <Container maxW="container.sm">
@@ -67,13 +70,14 @@ const TopCountries = ({ beers }) => {
               variant="filled"
               onChange={handleSelect}
               value={filter}
+              disabled={isLoading}
             >
               <option value="count">By Count</option>
               <option value="rating">By Rating</option>
             </Select>
           </Flex>
           <AnimatePresence>
-            {isCompact
+            {countries && !isLoading && isCompact
               ? countries.slice(0, 5).map(country => (
                   <TopElement
                     key={country.country_name}
@@ -83,7 +87,6 @@ const TopCountries = ({ beers }) => {
                       avgRating: country.avgRating,
                     }}
                     filter={filter}
-                    type="brewery"
                   />
                 ))
               : countries.map(country => (
@@ -97,8 +100,12 @@ const TopCountries = ({ beers }) => {
                     filter={filter}
                   />
                 ))}
+            {isLoading &&
+              Array.from(Array(5).keys()).map(country => (
+                <TopElement key={country} skeleton />
+              ))}
           </AnimatePresence>
-          {isCompact && countries.length > 5 && (
+          {!isLoading && isCompact && countries.length > 5 && (
             <Button
               onClick={handleIsCompact}
               size="xs"

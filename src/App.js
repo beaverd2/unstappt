@@ -1,45 +1,52 @@
 import React, { useState } from 'react';
-import {
-  ChakraProvider,
-  theme,
-  Flex,
-  Select,
-  Container,
-} from '@chakra-ui/react';
-import { ColorModeSwitcher } from './ColorModeSwitcher';
+import { ChakraProvider, theme, Flex } from '@chakra-ui/react';
 import Header from './Components/Header';
 import User from './Components/User';
-import { beers1, user1, beers50 } from './MockApi';
-import Styles from './Components/Styles';
+import { beers1, user1 } from './MockApi';
 import DrinkingPattern from './Components/DrinkingPattern';
 import axios from 'axios';
 import TopBeers from './Components/TopBeers';
-import TopCountries from './Components/TopCountries';
 import TopRegions from './Components/TopRegions';
-import TopBreweries from './Components/TopBreweries';
 import TopStyles from './Components/TopStyles';
 import dayjs from 'dayjs';
 import Statistics from './Components/Statistics';
+import DatePickerContainer from './Components/DatePickerContainer';
+import ActivityContainer from './Components/Activity/ActivityContainer';
+import Sessions from './Components/Sessions';
+import BeerTable from './Components/BeerTable';
+import TopCountries from './Components/TopCountries';
+import TopBreweries from './Components/TopBreweries';
 
 function App() {
   const [beers, setBeers] = useState(beers1.response.beers.items);
   const [user, setUser] = useState(user1.response.user);
+  // const [beers, setBeers] = useState(null);
+  // const [user, setUser] = useState(null);
+  const [startDate, setStartDate] = useState(dayjs().subtract(7, 'days').$d);
+  const [endDate, setEndDate] = useState(dayjs().$d);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false);
   const auth = `&client_id=${process.env.REACT_APP_CLIENT_ID}&client_secret=${process.env.REACT_APP_CLIENT_SECRET}`;
-  const fetchBeers = async (url, startDate, endDate) => {
+
+  const fetchBeers = async url => {
+    setIsLoading(true);
     try {
       const response = await axios.get(url + auth);
       const data = response.data.response;
       const beers = data.beers.items;
-      if (startDate && endDate && data.pagination.next_url) {
+      if (data.pagination.next_url) {
         return beers.concat(await fetchBeers(data.pagination.next_url));
       } else {
         return beers;
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
   const fetchUser = async username => {
+    setIsLoading(true);
     try {
       const response = await axios.get(
         `https://api.untappd.com/v4/user/info/${username}?` + auth
@@ -48,41 +55,66 @@ function App() {
       return user;
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   };
   const fetchAll = async username => {
-    const now = dayjs().format('YYYY-MM-DD');
-    const weekAgo = dayjs().subtract(7, 'days').format('YYYY-MM-DD');
-    const allBeers = await fetchBeers(
-      `https://api.untappd.com/v4/user/beers/${username}?limit=50&start_date=${weekAgo}&end_date=${now}`
-    );
+    const now = dayjs();
+    const weekAgo = dayjs().subtract(7, 'days');
     const user = await fetchUser(username);
+    const allBeers = await fetchBeers(
+      `https://api.untappd.com/v4/user/beers/${username}?limit=50&start_date=${weekAgo.format(
+        'YYYY-MM-DD'
+      )}&end_date=${now.format('YYYY-MM-DD')}`
+    );
     console.log('fetchAll', allBeers, user);
+    setStartDate(weekAgo.$d);
+    setEndDate(now.$d);
     setUser(user);
+    setBeers(allBeers);
+  };
+
+  const fetchBeersForRange = async (startDate, endDate) => {
+    const allBeers = await fetchBeers(
+      `https://api.untappd.com/v4/user/beers/${
+        user.user_name
+      }?limit=50&start_date=${dayjs(startDate).format(
+        'YYYY-MM-DD'
+      )}&end_date=${dayjs(endDate).format('YYYY-MM-DD')}`
+    );
+    setStartDate(startDate);
+    setEndDate(endDate);
     setBeers(allBeers);
   };
   return (
     <ChakraProvider theme={theme}>
-      <Flex bg="gray.100" flexDir="column" pb={4}>
+      <Flex bg="gray.100" flexDir="column">
         <Header fetchAll={fetchAll} />
-        <User user={user} />
-        <Container maxW="container.sm">
-          <Select
-            maxW={24}
-            placeholder="last week"
-            size="xs"
-            bg="white"
-            marginTop={4}
-            marginLeft="auto"
-          />
-        </Container>
-        <Statistics beers={beers} />
-        <TopBeers beers={beers} />
-        <TopBreweries beers={beers} />
-        <TopStyles beers={beers} />
-        <TopCountries beers={beers} />
-        <TopRegions beers={beers} />
-        <DrinkingPattern beers={beers} />
+        {(beers || isLoading) && (
+          <>
+            <User isLoading={isLoading} user={user} />
+            <DatePickerContainer
+              fetchBeersForRange={fetchBeersForRange}
+              isLoading={isLoading}
+            />
+            <Statistics beers={beers} isLoading={isLoading} />
+            <ActivityContainer
+              isLoading={isLoading}
+              beers={beers}
+              startDate={startDate}
+              endDate={endDate}
+            />
+            <TopBeers beers={beers} isLoading={isLoading} />
+            <TopBreweries beers={beers} isLoading={isLoading} />
+            <TopStyles beers={beers} isLoading={isLoading} />
+            <TopCountries beers={beers} isLoading={isLoading} />
+            <TopRegions beers={beers} isLoading={isLoading} />
+            <DrinkingPattern beers={beers} isLoading={isLoading} />
+            <Sessions beers={beers} isLoading={isLoading} />
+            <BeerTable beers={beers} isLoading={isLoading} />
+          </>
+        )}
       </Flex>
     </ChakraProvider>
   );

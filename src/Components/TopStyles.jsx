@@ -4,7 +4,7 @@ import { Container, Select, Button, Switch } from '@chakra-ui/react';
 import TopElement from './TopElement';
 import { AnimatePresence } from 'framer-motion';
 
-const TopStyles = ({ beers }) => {
+const TopStyles = ({ beers, isLoading }) => {
   const [filter, setFilter] = useState('count');
   const [isCompact, setIsCompact] = useState(true);
   const [styles, setStyles] = useState([]);
@@ -60,34 +60,36 @@ const TopStyles = ({ beers }) => {
     setIsCompact(true);
     setFilter('count');
     setIsFull(true);
-    const styles = Object.values(
-      beers
-        .map(beer => {
-          return {
-            style_name: beer.beer.beer_style,
-            // brewery_label: beer.brewery.brewery_label,
-            rating: beer.rating_score,
-          };
-        })
-        .reduce((obj, { style_name, rating }) => {
-          if (obj[style_name] === undefined)
-            obj[style_name] = {
-              style_name: style_name,
-              // brewery_label: brewery_label,
-              sumRating: rating,
-              avgRating: rating,
-              count: 1,
+    if (beers) {
+      const styles = Object.values(
+        beers
+          .map(beer => {
+            return {
+              style_name: beer.beer.beer_style,
+              // brewery_label: beer.brewery.brewery_label,
+              rating: beer.rating_score,
             };
-          else {
-            obj[style_name].count++;
-            obj[style_name].sumRating += rating;
-            obj[style_name].avgRating =
-              obj[style_name].sumRating / obj[style_name].count;
-          }
-          return obj;
-        }, {})
-    );
-    setStyles(styles.sort((a, b) => (a.count < b.count && 1) || -1));
+          })
+          .reduce((obj, { style_name, rating }) => {
+            if (obj[style_name] === undefined)
+              obj[style_name] = {
+                style_name: style_name,
+                // brewery_label: brewery_label,
+                sumRating: rating,
+                avgRating: rating,
+                count: 1,
+              };
+            else {
+              obj[style_name].count++;
+              obj[style_name].sumRating += rating;
+              obj[style_name].avgRating =
+                obj[style_name].sumRating / obj[style_name].count;
+            }
+            return obj;
+          }, {})
+      );
+      setStyles(styles.sort((a, b) => (a.count < b.count && 1) || -1));
+    }
   }, [beers]);
 
   return (
@@ -100,25 +102,29 @@ const TopStyles = ({ beers }) => {
             marginBottom={2}
           >
             <Heading size="sm">Top Styles</Heading>
-            <Switch isChecked={isFull} onChange={handleIsFull} />
+            <Switch
+              isDisabled={isLoading}
+              isChecked={isFull}
+              onChange={handleIsFull}
+            />
             <Select
               maxW={28}
               size="xs"
               variant="filled"
               onChange={handleSelect}
               value={filter}
+              disabled={isLoading}
             >
               <option value="count">By Count</option>
               <option value="rating">By Rating</option>
             </Select>
           </Flex>
           <AnimatePresence>
-            {isCompact
+            {styles && !isLoading && isCompact
               ? styles.slice(0, 5).map(style => (
                   <TopElement
                     key={style.style_name}
                     data={{
-                      // img: beer.brewery_label,
                       name: style.style_name,
                       count: style.count,
                       avgRating: style.avgRating,
@@ -131,7 +137,6 @@ const TopStyles = ({ beers }) => {
                   <TopElement
                     key={style.style_name}
                     data={{
-                      // img: beer.brewery_label,
                       name: style.style_name,
                       count: style.count,
                       avgRating: style.avgRating,
@@ -139,8 +144,12 @@ const TopStyles = ({ beers }) => {
                     filter={filter}
                   />
                 ))}
+            {isLoading &&
+              Array.from(Array(5).keys()).map(style => (
+                <TopElement key={style} skeleton />
+              ))}
           </AnimatePresence>
-          {isCompact && styles.length > 5 && (
+          {isCompact && !isLoading && styles.length > 5 && (
             <Button
               onClick={handleIsCompact}
               size="xs"
