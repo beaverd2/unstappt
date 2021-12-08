@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { ChakraProvider, theme, Flex, Container } from '@chakra-ui/react';
+import {
+  ChakraProvider,
+  theme,
+  Flex,
+  Container,
+  Center,
+  Link,
+} from '@chakra-ui/react';
 import { createStandaloneToast } from '@chakra-ui/toast';
 import Header from './Components/Header';
 import User from './Components/User';
@@ -120,7 +127,7 @@ function App() {
 
   return (
     <ChakraProvider theme={theme}>
-      <Flex bg="gray.100" flexDir="column" flexWrap="wrap">
+      <Flex bg="gray.100" flexDir="column" flexWrap="wrap" minH="100vh">
         <Header fetchAll={fetchAll} />
         {(beers || isLoading) && (
           <>
@@ -155,6 +162,17 @@ function App() {
             </Container>
           </>
         )}
+        <Center py={4} mt="auto">
+          Author:&nbsp;
+          <Link
+            color="blue.400"
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://github.com/beaverd2"
+          >
+            beaverd2
+          </Link>
+        </Center>
       </Flex>
     </ChakraProvider>
   );
