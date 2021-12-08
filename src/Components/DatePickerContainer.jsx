@@ -1,5 +1,5 @@
 import { Button } from '@chakra-ui/button';
-import { Container } from '@chakra-ui/layout';
+import { Flex } from '@chakra-ui/layout';
 import { Skeleton } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import React, { useState, forwardRef } from 'react';
@@ -32,7 +32,7 @@ const DatePickerContainer = ({ fetchBeersForRange, isLoading }) => {
   ));
 
   return (
-    <Container maxW="container.sm" mb={2}>
+    <Flex mb={2}>
       {isLoading ? (
         <Skeleton height={8} width="100%" />
       ) : (
@@ -49,7 +49,7 @@ const DatePickerContainer = ({ fetchBeersForRange, isLoading }) => {
           customInput={<ExampleCustomInput />}
         />
       )}
-    </Container>
+    </Flex>
   );
 };
 

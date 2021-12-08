@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ChakraProvider, theme, Flex } from '@chakra-ui/react';
+import { ChakraProvider, theme, Flex, Container } from '@chakra-ui/react';
+import { createStandaloneToast } from '@chakra-ui/toast';
 import Header from './Components/Header';
 import User from './Components/User';
 import { beers1, user1 } from './MockApi';
@@ -18,10 +19,10 @@ import TopCountries from './Components/TopCountries';
 import TopBreweries from './Components/TopBreweries';
 
 function App() {
-  const [beers, setBeers] = useState(beers1.response.beers.items);
-  const [user, setUser] = useState(user1.response.user);
-  // const [beers, setBeers] = useState(null);
-  // const [user, setUser] = useState(null);
+  // const [beers, setBeers] = useState(beers1.response.beers.items);
+  // const [user, setUser] = useState(user1.response.user);
+  const [beers, setBeers] = useState(null);
+  const [user, setUser] = useState(null);
   const [startDate, setStartDate] = useState(dayjs().subtract(7, 'days').$d);
   const [endDate, setEndDate] = useState(dayjs().$d);
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +41,7 @@ function App() {
         return beers;
       }
     } catch (error) {
-      console.log(error);
+      return { message: error?.response.data.meta.error_detail };
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +55,7 @@ function App() {
       const user = response.data.response.user;
       return user;
     } catch (error) {
-      console.log(error);
+      return { message: error?.response.data.meta.error_detail };
     } finally {
       setIsLoading(false);
     }
@@ -69,10 +70,17 @@ function App() {
       )}&end_date=${now.format('YYYY-MM-DD')}`
     );
     console.log('fetchAll', allBeers, user);
-    setStartDate(weekAgo.$d);
-    setEndDate(now.$d);
-    setUser(user);
-    setBeers(allBeers);
+    if (user.message || allBeers.message) {
+      setError(user.message || allBeers.message);
+      console.log(user.message || allBeers.message);
+      Notification(user.message || allBeers.message);
+    }
+    if (!user.message && !allBeers.message) {
+      setStartDate(weekAgo.$d);
+      setEndDate(now.$d);
+      setUser(user);
+      setBeers(allBeers);
+    }
   };
 
   const fetchBeersForRange = async (startDate, endDate) => {
@@ -83,36 +91,68 @@ function App() {
         'YYYY-MM-DD'
       )}&end_date=${dayjs(endDate).format('YYYY-MM-DD')}`
     );
-    setStartDate(startDate);
-    setEndDate(endDate);
-    setBeers(allBeers);
+    if (allBeers.message) {
+      setError(allBeers.message);
+      console.log(allBeers.message);
+      Notification(user.message || allBeers.message);
+    }
+    if (!user.message && !allBeers.message) {
+      setStartDate(startDate);
+      setEndDate(endDate);
+      setBeers(allBeers);
+    }
   };
+
+  const Notification = message => {
+    const toast = createStandaloneToast({});
+
+    toast({
+      title: 'Error',
+      description: message,
+      status: 'error',
+      duration: 3000,
+      position: 'top',
+      isClosable: true,
+    });
+
+    return <></>;
+  };
+
   return (
     <ChakraProvider theme={theme}>
-      <Flex bg="gray.100" flexDir="column">
+      <Flex bg="gray.100" flexDir="column" flexWrap="wrap">
         <Header fetchAll={fetchAll} />
         {(beers || isLoading) && (
           <>
-            <User isLoading={isLoading} user={user} />
-            <DatePickerContainer
-              fetchBeersForRange={fetchBeersForRange}
-              isLoading={isLoading}
-            />
-            <Statistics beers={beers} isLoading={isLoading} />
-            <ActivityContainer
-              isLoading={isLoading}
-              beers={beers}
-              startDate={startDate}
-              endDate={endDate}
-            />
-            <TopBeers beers={beers} isLoading={isLoading} />
-            <TopBreweries beers={beers} isLoading={isLoading} />
-            <TopStyles beers={beers} isLoading={isLoading} />
-            <TopCountries beers={beers} isLoading={isLoading} />
-            <TopRegions beers={beers} isLoading={isLoading} />
-            <DrinkingPattern beers={beers} isLoading={isLoading} />
-            <Sessions beers={beers} isLoading={isLoading} />
-            <BeerTable beers={beers} isLoading={isLoading} />
+            <Container maxW={['container.sm', 'container.md', 'container.lg']}>
+              <User isLoading={isLoading} user={user} />
+              <DatePickerContainer
+                fetchBeersForRange={fetchBeersForRange}
+                isLoading={isLoading}
+              />
+              <Statistics beers={beers} isLoading={isLoading} />
+              <ActivityContainer
+                isLoading={isLoading}
+                beers={beers}
+                startDate={startDate}
+                endDate={endDate}
+              />
+              <Flex
+                flexWrap="wrap"
+                justifyContent="space-between"
+                gridColumnGap={2}
+                alignItems="flex-start"
+              >
+                <TopBeers beers={beers} isLoading={isLoading} />
+                <TopBreweries beers={beers} isLoading={isLoading} />
+                <TopStyles beers={beers} isLoading={isLoading} />
+                <TopCountries beers={beers} isLoading={isLoading} />
+                <TopRegions beers={beers} isLoading={isLoading} />
+              </Flex>
+              <DrinkingPattern beers={beers} isLoading={isLoading} />
+              <Sessions beers={beers} isLoading={isLoading} />
+              <BeerTable beers={beers} isLoading={isLoading} user={user} />
+            </Container>
           </>
         )}
       </Flex>

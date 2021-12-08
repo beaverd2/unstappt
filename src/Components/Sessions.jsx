@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import { Flex, Heading } from '@chakra-ui/layout';
 import React, { memo, useState, useEffect } from 'react';
-import { Container, Skeleton } from '@chakra-ui/react';
+import { Skeleton } from '@chakra-ui/react';
 import { TriangleDownIcon, TriangleUpIcon } from '@chakra-ui/icons';
 import { useTable, useSortBy } from 'react-table';
 import { Table, Thead, Tbody, Tr, Th, Td, chakra } from '@chakra-ui/react';
@@ -87,64 +87,62 @@ const Sessions = ({ beers, isLoading }) => {
     useTable({ columns: tableColumns, data }, useSortBy);
 
   return (
-    <Flex marginTop={4}>
-      <Container maxW="container.sm">
-        <Flex bgColor="white" p={2} shadow="base" flexDirection="column">
-          <Flex
-            justifyContent="space-between"
-            alignItems="center"
-            marginBottom={2}
-          >
-            <Heading size="sm">Drinking Sessions</Heading>
-          </Flex>
-          <Flex>
-            <Table size="sm" {...getTableProps()}>
-              <Thead>
-                {headerGroups.map(headerGroup => (
-                  <Tr {...headerGroup.getHeaderGroupProps()}>
-                    {headerGroup.headers.map(column => (
-                      <Th
-                        {...column.getHeaderProps(
-                          column.getSortByToggleProps()
-                        )}
-                        isNumeric={column.isNumeric}
-                      >
-                        {column.render('Header')}
-                        <chakra.span>
-                          {column.isSorted ? (
-                            column.isSortedDesc ? (
-                              <TriangleDownIcon aria-label="sorted descending" />
-                            ) : (
-                              <TriangleUpIcon aria-label="sorted ascending" />
-                            )
-                          ) : null}
-                        </chakra.span>
-                      </Th>
-                    ))}
-                  </Tr>
+    <Flex
+      bgColor="white"
+      p={2}
+      shadow="base"
+      flexDirection="column"
+      mx="auto"
+      width="100%"
+      marginTop={4}
+    >
+      <Flex justifyContent="space-between" alignItems="center" marginBottom={2}>
+        <Heading size="sm">Drinking Sessions</Heading>
+      </Flex>
+      <Flex>
+        <Table size="sm" {...getTableProps()}>
+          <Thead>
+            {headerGroups.map(headerGroup => (
+              <Tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map(column => (
+                  <Th
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                    isNumeric={column.isNumeric}
+                  >
+                    {column.render('Header')}
+                    <chakra.span>
+                      {column.isSorted ? (
+                        column.isSortedDesc ? (
+                          <TriangleDownIcon aria-label="sorted descending" />
+                        ) : (
+                          <TriangleUpIcon aria-label="sorted ascending" />
+                        )
+                      ) : null}
+                    </chakra.span>
+                  </Th>
                 ))}
-              </Thead>
-              <Tbody {...getTableBodyProps()}>
-                {rows.map(row => {
-                  prepareRow(row);
-                  return (
-                    <Tr {...row.getRowProps()}>
-                      {row.cells.map(cell => (
-                        <Td
-                          {...cell.getCellProps()}
-                          isNumeric={cell.column.isNumeric}
-                        >
-                          {cell.render('Cell')}
-                        </Td>
-                      ))}
-                    </Tr>
-                  );
-                })}
-              </Tbody>
-            </Table>
-          </Flex>
-        </Flex>
-      </Container>
+              </Tr>
+            ))}
+          </Thead>
+          <Tbody {...getTableBodyProps()}>
+            {rows.map(row => {
+              prepareRow(row);
+              return (
+                <Tr {...row.getRowProps()}>
+                  {row.cells.map(cell => (
+                    <Td
+                      {...cell.getCellProps()}
+                      isNumeric={cell.column.isNumeric}
+                    >
+                      {cell.render('Cell')}
+                    </Td>
+                  ))}
+                </Tr>
+              );
+            })}
+          </Tbody>
+        </Table>
+      </Flex>
     </Flex>
   );
 };

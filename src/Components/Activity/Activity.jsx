@@ -56,8 +56,9 @@ const Activity = ({ beers, startDate, endDate }) => {
   console.log('dataset', dataset);
   return (
     <Line
-      height={200}
+      height={250}
       options={{
+        aspectRatio: false,
         borderWidth: isMoible ? 1 : 3,
         pointRadius: isMoible ? 2 : 3,
         responsive: true,

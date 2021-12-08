@@ -1,6 +1,6 @@
 import React, { memo, useState, useEffect } from 'react';
 import { Flex, Heading } from '@chakra-ui/layout';
-import { Container, Select, Button } from '@chakra-ui/react';
+import { Select, Button } from '@chakra-ui/react';
 import TopElement from './TopElement';
 import { AnimatePresence } from 'framer-motion';
 
@@ -57,69 +57,70 @@ const TopRegions = ({ beers, isLoading }) => {
   }, [beers]);
   console.log('regions', regions);
   return (
-    <Flex marginTop={4}>
-      <Container maxW="container.sm">
-        <Flex bgColor="white" p={2} shadow="base" flexDirection="column">
-          <Flex
-            justifyContent="space-between"
-            alignItems="center"
-            marginBottom={2}
-          >
-            <Heading size="sm">Top Regions/States</Heading>
-            <Select
-              maxW={28}
-              size="xs"
-              variant="filled"
-              onChange={handleSelect}
-              value={filter}
-              disabled={isLoading}
-            >
-              <option value="count">By Count</option>
-              <option value="rating">By Rating</option>
-            </Select>
-          </Flex>
-          <AnimatePresence>
-            {regions && !isLoading && isCompact
-              ? regions.slice(0, 5).map(region => (
-                  <TopElement
-                    key={region.region_name}
-                    data={{
-                      name: region.region_name,
-                      count: region.count,
-                      avgRating: region.avgRating,
-                    }}
-                    filter={filter}
-                  />
-                ))
-              : regions.map(region => (
-                  <TopElement
-                    key={region.region_name}
-                    data={{
-                      name: region.region_name,
-                      count: region.count,
-                      avgRating: region.avgRating,
-                    }}
-                    filter={filter}
-                  />
-                ))}
-            {isLoading &&
-              Array.from(Array(5).keys()).map(region => (
-                <TopElement key={region} skeleton />
-              ))}
-          </AnimatePresence>
-          {!isLoading && isCompact && regions.length > 5 && (
-            <Button
-              onClick={handleIsCompact}
-              size="xs"
-              alignSelf="center"
-              width={24}
-              variant="outline"
-            >
-              Load more
-            </Button>
-          )}
-        </Flex>
-      </Container>
+    <Flex
+      bgColor="white"
+      p={2}
+      shadow="base"
+      flexDirection="column"
+      width="100%"
+      marginTop={4}
+    >
+      <Flex justifyContent="space-between" alignItems="center" marginBottom={2}>
+        <Heading size="sm">Top Regions/States</Heading>
+        <Select
+          maxW={28}
+          size="xs"
+          variant="filled"
+          onChange={handleSelect}
+          value={filter}
+          disabled={isLoading}
+        >
+          <option value="count">By Count</option>
+          <option value="rating">By Rating</option>
+        </Select>
+      </Flex>
+      <AnimatePresence>
+        {regions &&
+          !isLoading &&
+          (isCompact
+            ? regions.slice(0, 5).map(region => (
+                <TopElement
+                  key={region.region_name}
+                  data={{
+                    name: region.region_name,
+                    count: region.count,
+                    avgRating: region.avgRating,
+                  }}
+                  filter={filter}
+                />
+              ))
+            : regions.map(region => (
+                <TopElement
+                  key={region.region_name}
+                  data={{
+                    name: region.region_name,
+                    count: region.count,
+                    avgRating: region.avgRating,
+                  }}
+                  filter={filter}
+                />
+              )))}
+        {isLoading &&
+          Array.from(Array(5).keys()).map(region => (
+            <TopElement key={region} skeleton />
+          ))}
+      </AnimatePresence>
+      {!isLoading && isCompact && regions.length > 5 && (
+        <Button
+          onClick={handleIsCompact}
+          size="xs"
+          alignSelf="center"
+          width={24}
+          variant="outline"
+        >
+          Load more
+        </Button>
+      )}
     </Flex>
   );
 };

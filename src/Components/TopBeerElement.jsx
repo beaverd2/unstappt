@@ -40,4 +40,7 @@ const TopBeerElement = ({ beer }) => {
   );
 };
 
-export default memo(TopBeerElement);
+export default memo(
+  TopBeerElement,
+  (next, prev) => next.beer.beer.beer_name === prev.beer.beer.beer_name
+);

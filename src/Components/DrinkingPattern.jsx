@@ -1,6 +1,6 @@
 import { Flex, Heading } from '@chakra-ui/layout';
 import React, { memo, useState, useEffect } from 'react';
-import { Container, Select, Skeleton } from '@chakra-ui/react';
+import { Select, Skeleton } from '@chakra-ui/react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -98,67 +98,69 @@ const DrinkingPattern = ({ beers, isLoading }) => {
   }, [beers]);
 
   return (
-    <Flex marginTop={4}>
-      <Container maxW="container.sm">
-        <Flex bgColor="white" p={2} shadow="base" flexDirection="column">
-          <Flex
-            justifyContent="space-between"
-            alignItems="center"
-            marginBottom={2}
-          >
-            <Heading size="sm">Drinking Pattern</Heading>
-            <Select
-              maxW={24}
-              size="xs"
-              value={filter}
-              onChange={handleSelect}
-              disabled={isLoading}
-            >
-              <option value="days">By Day</option>
-              <option value="hours">By Hour</option>
-            </Select>
-          </Flex>
-          <Flex alignSelf="center" w="100%">
-            {beers && !isLoading && (
-              <Bar
-                options={{
-                  barThickness: 'flex',
-                  responsive: true,
-                  layout: {
-                    padding: 8,
+    <Flex
+      bgColor="white"
+      p={2}
+      shadow="base"
+      flexDirection="column"
+      mx="auto"
+      width="100%"
+      marginTop={4}
+    >
+      <Flex justifyContent="space-between" alignItems="center" marginBottom={2}>
+        <Heading size="sm">Drinking Pattern</Heading>
+        <Select
+          maxW={24}
+          size="xs"
+          value={filter}
+          onChange={handleSelect}
+          disabled={isLoading}
+        >
+          <option value="days">By Day</option>
+          <option value="hours">By Hour</option>
+        </Select>
+      </Flex>
+      <Flex alignSelf="center" w="100%">
+        {beers && !isLoading && (
+          <Bar
+            height={250}
+            options={{
+              aspectRatio: false,
+              barThickness: 'flex',
+              responsive: true,
+              layout: {
+                padding: 8,
+              },
+              plugins: {
+                legend: {
+                  display: false,
+                },
+                datalabels: {
+                  display: filter === 'days' ? true : false,
+                  color: 'white',
+                  font: {
+                    weight: 'bold',
                   },
-                  plugins: {
-                    legend: {
-                      display: false,
-                    },
-                    datalabels: {
-                      display: filter === 'days' ? true : false,
-                      color: 'white',
-                      font: {
-                        weight: 'bold',
-                      },
-                    },
-                  },
-                  scales: {
-                    x: { grid: { display: false } },
-                  },
-                }}
-                data={{
-                  labels: filter === 'days' ? days : hours,
-                  datasets: [
-                    {
-                      label: 'Check-ins',
-                      data: filter === 'days' ? countDays : countHours,
-                      backgroundColor: '#FFBA2E',
-                    },
-                  ],
-                }}
-              />
-            )}
-            {isLoading && <Skeleton height={40} width="100%" />}
-          </Flex>
-        </Flex>
-      </Container>
+                },
+              },
+              scales: {
+                x: { grid: { display: false } },
+              },
+            }}
+            data={{
+              labels: filter === 'days' ? days : hours,
+              datasets: [
+                {
+                  label: 'Check-ins',
+                  data: filter === 'days' ? countDays : countHours,
+                  backgroundColor: '#FFBA2E',
+                },
+              ],
+            }}
+          />
+        )}
+        {isLoading && <Skeleton height={40} width="100%" />}
+      </Flex>
     </Flex>
   );
 };
