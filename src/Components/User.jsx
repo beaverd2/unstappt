@@ -9,7 +9,14 @@ const User = ({ user, isLoading }) => {
   if (user && !isLoading) {
     return (
       <Flex mb={2} mt={4}>
-        <Flex bgColor="white" p={2} shadow="base" mx="auto" width="100%">
+        <Flex
+          bgColor="white"
+          p={2}
+          shadow="base"
+          mx="auto"
+          width="100%"
+          borderRadius="base"
+        >
           <Avatar
             src={user.user_avatar}
             size="lg"

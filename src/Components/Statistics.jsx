@@ -42,6 +42,7 @@ const Statistics = ({ beers, isLoading }) => {
               shadow="base"
               flexBasis="40%"
               textAlign="center"
+              borderRadius="base"
             >
               <Text fontSize="lg">Check-ins</Text>
               <Text fontSize="lg" fontWeight="700">
@@ -56,6 +57,7 @@ const Statistics = ({ beers, isLoading }) => {
               shadow="base"
               flexBasis="40%"
               textAlign="center"
+              borderRadius="base"
             >
               <Text fontSize="lg">Styles</Text>
               <Text fontSize="lg" fontWeight="700">
@@ -70,6 +72,7 @@ const Statistics = ({ beers, isLoading }) => {
               shadow="base"
               flexBasis="40%"
               textAlign="center"
+              borderRadius="base"
             >
               <Text fontSize="lg">Breweries</Text>
               <Text fontSize="lg" fontWeight="700">
@@ -84,6 +87,7 @@ const Statistics = ({ beers, isLoading }) => {
               shadow="base"
               flexBasis="40%"
               textAlign="center"
+              borderRadius="base"
             >
               <Text fontSize="lg">Countries</Text>
               <Text fontSize="lg" fontWeight="700">
@@ -98,6 +102,7 @@ const Statistics = ({ beers, isLoading }) => {
               shadow="base"
               flexBasis="40%"
               textAlign="center"
+              borderRadius="base"
             >
               <Text fontSize="lg">Avg Rating</Text>
               <Text fontSize="lg" fontWeight="700">
@@ -116,6 +121,7 @@ const Statistics = ({ beers, isLoading }) => {
               shadow="base"
               flexBasis="40%"
               textAlign="center"
+              borderRadius="base"
             >
               <Skeleton h={14} w="100%" />
             </Flex>
@@ -127,6 +133,7 @@ const Statistics = ({ beers, isLoading }) => {
               shadow="base"
               flexBasis="40%"
               textAlign="center"
+              borderRadius="base"
             >
               <Skeleton h={14} w="100%" />
             </Flex>
@@ -138,6 +145,7 @@ const Statistics = ({ beers, isLoading }) => {
               shadow="base"
               flexBasis="40%"
               textAlign="center"
+              borderRadius="base"
             >
               <Skeleton h={14} w="100%" />
             </Flex>
@@ -149,6 +157,7 @@ const Statistics = ({ beers, isLoading }) => {
               shadow="base"
               flexBasis="40%"
               textAlign="center"
+              borderRadius="base"
             >
               <Skeleton h={14} w="100%" />
             </Flex>
@@ -160,6 +169,7 @@ const Statistics = ({ beers, isLoading }) => {
               shadow="base"
               flexBasis="40%"
               textAlign="center"
+              borderRadius="base"
             >
               <Skeleton h={14} w="100%" />
             </Flex>

@@ -106,6 +106,7 @@ const DrinkingPattern = ({ beers, isLoading }) => {
       mx="auto"
       width="100%"
       marginTop={4}
+      borderRadius="base"
     >
       <Flex justifyContent="space-between" alignItems="center" marginBottom={2}>
         <Heading size="sm">Drinking Pattern</Heading>
@@ -151,6 +152,7 @@ const DrinkingPattern = ({ beers, isLoading }) => {
               labels: filter === 'days' ? days : hours,
               datasets: [
                 {
+                  borderRadius: 4,
                   label: 'Check-ins',
                   data: filter === 'days' ? countDays : countHours,
                   backgroundColor: '#FFBA2E',

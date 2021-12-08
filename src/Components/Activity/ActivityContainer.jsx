@@ -13,6 +13,7 @@ const ActivityContainer = ({ beers, startDate, endDate, isLoading }) => {
         flexDirection="column"
         mx="auto"
         width="100%"
+        borderRadius="base"
       >
         <Flex
           justifyContent="space-between"

@@ -64,6 +64,7 @@ const TopRegions = ({ beers, isLoading }) => {
       flexDirection="column"
       width="100%"
       marginTop={4}
+      borderRadius="base"
     >
       <Flex justifyContent="space-between" alignItems="center" marginBottom={2}>
         <Heading size="sm">Top Regions/States</Heading>

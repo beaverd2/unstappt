@@ -104,6 +104,7 @@ const BeerTable = ({ beers, isLoading, user }) => {
       p={2}
       shadow="base"
       flexDirection="column"
+      borderRadius="base"
     >
       <Flex justifyContent="space-between" alignItems="center" marginBottom={2}>
         <Heading size="sm">Beer table</Heading>
