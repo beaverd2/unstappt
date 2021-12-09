@@ -31,26 +31,42 @@ const TopBreweries = ({ beers, isLoading }) => {
             return {
               brewery_name: beer.brewery.brewery_name,
               brewery_label: beer.brewery.brewery_label,
+              brewery_page_url: beer.brewery.brewery_page_url,
+              country_name: beer.brewery.country_name,
               rating: beer.rating_score,
             };
           })
-          .reduce((obj, { brewery_name, brewery_label, rating }) => {
-            if (obj[brewery_name] === undefined)
-              obj[brewery_name] = {
-                brewery_name: brewery_name,
-                brewery_label: brewery_label,
-                sumRating: rating,
-                avgRating: rating,
-                count: 1,
-              };
-            else {
-              obj[brewery_name].count++;
-              obj[brewery_name].sumRating += rating;
-              obj[brewery_name].avgRating =
-                obj[brewery_name].sumRating / obj[brewery_name].count;
-            }
-            return obj;
-          }, {})
+          .reduce(
+            (
+              obj,
+              {
+                brewery_name,
+                brewery_label,
+                rating,
+                brewery_page_url,
+                country_name,
+              }
+            ) => {
+              if (obj[brewery_name] === undefined)
+                obj[brewery_name] = {
+                  brewery_name: brewery_name,
+                  brewery_label: brewery_label,
+                  brewery_page_url: brewery_page_url,
+                  country_name: country_name,
+                  sumRating: rating,
+                  avgRating: rating,
+                  count: 1,
+                };
+              else {
+                obj[brewery_name].count++;
+                obj[brewery_name].sumRating += rating;
+                obj[brewery_name].avgRating =
+                  obj[brewery_name].sumRating / obj[brewery_name].count;
+              }
+              return obj;
+            },
+            {}
+          )
       );
 
       setBreweries(breweries.sort((a, b) => (a.count < b.count && 1) || -1));
@@ -93,8 +109,11 @@ const TopBreweries = ({ beers, isLoading }) => {
                     name: brewery.brewery_name,
                     count: brewery.count,
                     avgRating: brewery.avgRating,
+                    url: brewery.brewery_page_url,
+                    country: brewery.country_name,
                   }}
                   filter={filter}
+                  type="brewery"
                 />
               ))
             : breweries.map(brewery => (
@@ -105,8 +124,11 @@ const TopBreweries = ({ beers, isLoading }) => {
                     name: brewery.brewery_name,
                     count: brewery.count,
                     avgRating: brewery.avgRating,
+                    url: brewery.brewery_page_url,
+                    country: brewery.country_name,
                   }}
                   filter={filter}
+                  type="brewery"
                 />
               )))}
         {isLoading &&

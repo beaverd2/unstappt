@@ -3,9 +3,18 @@ import { Flex } from '@chakra-ui/layout';
 import { Image, Skeleton, Text } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 
-const TopElement = ({ data, filter, skeleton }) => {
-  // console.log('elemRender', data);
+const TopElement = ({ data, filter, skeleton, type }) => {
   const MotionFlex = motion(Flex);
+  console.log('elemRender', data, type);
+
+  const openInNewTab = url => {
+    const newWindow = window.open(
+      `https://untappd.com` + url,
+      '_blank',
+      'noopener,noreferrer'
+    );
+    if (newWindow) newWindow.opener = null;
+  };
 
   if (skeleton) {
     return (
@@ -30,6 +39,9 @@ const TopElement = ({ data, filter, skeleton }) => {
       marginBottom={4}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
+      _hover={{ bgColor: type !== undefined ? 'gray.100' : 'none' }}
+      cursor={type !== undefined ? 'pointer' : 'auto'}
+      onClick={() => data.url && openInNewTab(data.url)}
     >
       {data.img && (
         <Image
@@ -44,9 +56,13 @@ const TopElement = ({ data, filter, skeleton }) => {
 
       <Flex flexDir="column" w="80%">
         <Text isTruncated>{data.name}</Text>
+        <Text isTruncated>{data.country || data.brewery}</Text>
         {filter === 'count' && <Text>{data.count} Total</Text>}
-        {filter === 'rating' && (
+        {filter === 'rating' && data.avgRating && (
           <Text>avg: {data.avgRating.toPrecision(3)}</Text>
+        )}
+        {filter === 'rating' && data.rating && (
+          <Text>rating: {data.rating.toPrecision(3)}</Text>
         )}
       </Flex>
     </MotionFlex>

@@ -134,7 +134,6 @@ const TopStyles = ({ beers, isLoading }) => {
                     avgRating: style.avgRating,
                   }}
                   filter={filter}
-                  type="brewery"
                 />
               ))
             : styles.map(style => (

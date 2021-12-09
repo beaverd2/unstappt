@@ -26,10 +26,10 @@ import TopCountries from './Components/TopCountries';
 import TopBreweries from './Components/TopBreweries';
 
 function App() {
-  // const [beers, setBeers] = useState(beers1.response.beers.items);
-  // const [user, setUser] = useState(user1.response.user);
-  const [beers, setBeers] = useState(null);
-  const [user, setUser] = useState(null);
+  const [beers, setBeers] = useState(beers1.response.beers.items);
+  const [user, setUser] = useState(user1.response.user);
+  // const [beers, setBeers] = useState(null);
+  // const [user, setUser] = useState(null);
   const [startDate, setStartDate] = useState(dayjs().subtract(7, 'days').$d);
   const [endDate, setEndDate] = useState(dayjs().$d);
   const [isLoading, setIsLoading] = useState(false);
@@ -150,7 +150,7 @@ function App() {
                 gridColumnGap={2}
                 alignItems="flex-start"
               >
-                <TopBeers beers={beers} isLoading={isLoading} />
+                <TopBeers beersData={beers} isLoading={isLoading} />
                 <TopBreweries beers={beers} isLoading={isLoading} />
                 <TopStyles beers={beers} isLoading={isLoading} />
                 <TopCountries beers={beers} isLoading={isLoading} />
