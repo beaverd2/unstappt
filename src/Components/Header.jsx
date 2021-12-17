@@ -15,9 +15,8 @@ const Header = ({ fetchAll }) => {
   };
   return (
     <Box bgColor="#FFBA2E" w="100%">
-      <Container maxW="container.sm">
+      <Container maxW={['container.sm', 'container.md', 'container.lg']}>
         <Flex height={12} alignItems="center" justifyContent="space-between">
-          {}
           <Heading>Unstappt</Heading>
           <form onSubmit={handleSubmit}>
             <Input

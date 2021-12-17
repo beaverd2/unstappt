@@ -115,6 +115,7 @@ const DrinkingPattern = ({ beers, isLoading }) => {
           size="xs"
           value={filter}
           onChange={handleSelect}
+          variant="filled"
           disabled={isLoading}
         >
           <option value="days">By Day</option>

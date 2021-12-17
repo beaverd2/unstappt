@@ -3,9 +3,9 @@ import { Flex } from '@chakra-ui/layout';
 import { Image, Skeleton, Text } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 
-const TopElement = ({ data, filter, skeleton, type }) => {
+const TopElement = ({ data, filter, skeleton, hoverable }) => {
   const MotionFlex = motion(Flex);
-  console.log('elemRender', data, type);
+  console.log('elemRender', data, hoverable);
 
   const openInNewTab = url => {
     const newWindow = window.open(
@@ -37,10 +37,18 @@ const TopElement = ({ data, filter, skeleton, type }) => {
     <MotionFlex
       alignItems="flex-start"
       marginBottom={4}
+      backgroundColor="white"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      _hover={{ bgColor: type !== undefined ? 'gray.100' : 'none' }}
-      cursor={type !== undefined ? 'pointer' : 'auto'}
+      whileHover={
+        hoverable
+          ? {
+              backgroundColor: hoverable && '#EDF2F7',
+              transition: { duration: 0.2 },
+            }
+          : {}
+      }
+      cursor={hoverable ? 'pointer' : 'auto'}
       onClick={() => data.url && openInNewTab(data.url)}
     >
       {data.img && (
@@ -56,7 +64,7 @@ const TopElement = ({ data, filter, skeleton, type }) => {
 
       <Flex flexDir="column" w="80%">
         <Text isTruncated>{data.name}</Text>
-        <Text isTruncated>{data.country || data.brewery}</Text>
+        <Text isTruncated>{data.name2 && data.name2}</Text>
         {filter === 'count' && <Text>{data.count} Total</Text>}
         {filter === 'rating' && data.avgRating && (
           <Text>avg: {data.avgRating.toPrecision(3)}</Text>

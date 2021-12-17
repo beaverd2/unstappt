@@ -1,8 +1,7 @@
 import React, { memo, useState, useEffect } from 'react';
 import { Flex, Heading } from '@chakra-ui/layout';
 import { Select, Button, Switch } from '@chakra-ui/react';
-import TopElement from './TopElement';
-import { AnimatePresence } from 'framer-motion';
+import TopList from './TopList/TopList';
 
 const TopStyles = ({ beers, isLoading }) => {
   const [filter, setFilter] = useState('count');
@@ -10,12 +9,20 @@ const TopStyles = ({ beers, isLoading }) => {
   const [styles, setStyles] = useState([]);
   const [isFull, setIsFull] = useState(true);
 
+  const showButton = !isLoading && isCompact && styles.length > 5;
+
   const handleSelect = e => {
     setFilter(e.target.value);
     e.target.value === 'count'
-      ? setStyles(styles.sort((a, b) => (a.count < b.count && 1) || -1))
+      ? setStyles(
+          [...styles].sort(
+            (a, b) => b.count - a.count || a.name.localeCompare(b.name)
+          )
+        )
       : setStyles(
-          styles.sort((a, b) => (a.avgRating < b.avgRating && 1) || -1)
+          [...styles].sort(
+            (a, b) => b.avgRating - a.avgRating || a.name.localeCompare(b.name)
+          )
         );
   };
   const handleIsCompact = () => {
@@ -27,34 +34,39 @@ const TopStyles = ({ beers, isLoading }) => {
       beers
         .map(beer => {
           return {
-            style_name: e.target.checked
+            name: e.target.checked
               ? beer.beer.beer_style
               : beer.beer.beer_style.split('-')[0],
-            // brewery_label: beer.brewery.brewery_label,
             rating: beer.rating_score,
           };
         })
-        .reduce((obj, { style_name, rating }) => {
-          if (obj[style_name] === undefined)
-            obj[style_name] = {
-              style_name: style_name,
-              // brewery_label: brewery_label,
+        .reduce((obj, { name, rating }) => {
+          if (obj[name] === undefined)
+            obj[name] = {
+              name: name,
               sumRating: rating,
               avgRating: rating,
               count: 1,
             };
           else {
-            obj[style_name].count++;
-            obj[style_name].sumRating += rating;
-            obj[style_name].avgRating =
-              obj[style_name].sumRating / obj[style_name].count;
+            obj[name].count++;
+            obj[name].sumRating += rating;
+            obj[name].avgRating = obj[name].sumRating / obj[name].count;
           }
           return obj;
         }, {})
     );
     filter === 'count'
-      ? setStyles(style.sort((a, b) => (a.count < b.count && 1) || -1))
-      : setStyles(style.sort((a, b) => (a.avgRating < b.avgRating && 1) || -1));
+      ? setStyles(
+          [...style].sort(
+            (a, b) => b.count - a.count || a.name.localeCompare(b.name)
+          )
+        )
+      : setStyles(
+          [...style].sort(
+            (a, b) => b.avgRating - a.avgRating || a.name.localeCompare(b.name)
+          )
+        );
   };
   useEffect(() => {
     setIsCompact(true);
@@ -65,30 +77,29 @@ const TopStyles = ({ beers, isLoading }) => {
         beers
           .map(beer => {
             return {
-              style_name: beer.beer.beer_style,
-              // brewery_label: beer.brewery.brewery_label,
+              name: beer.beer.beer_style,
               rating: beer.rating_score,
             };
           })
-          .reduce((obj, { style_name, rating }) => {
-            if (obj[style_name] === undefined)
-              obj[style_name] = {
-                style_name: style_name,
-                // brewery_label: brewery_label,
+          .reduce((obj, { name, rating }) => {
+            if (obj[name] === undefined)
+              obj[name] = {
+                name: name,
                 sumRating: rating,
                 avgRating: rating,
                 count: 1,
               };
             else {
-              obj[style_name].count++;
-              obj[style_name].sumRating += rating;
-              obj[style_name].avgRating =
-                obj[style_name].sumRating / obj[style_name].count;
+              obj[name].count++;
+              obj[name].sumRating += rating;
+              obj[name].avgRating = obj[name].sumRating / obj[name].count;
             }
             return obj;
           }, {})
       );
-      setStyles(styles.sort((a, b) => (a.count < b.count && 1) || -1));
+      setStyles(
+        styles.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+      );
     }
   }, [beers]);
 
@@ -121,38 +132,13 @@ const TopStyles = ({ beers, isLoading }) => {
           <option value="rating">By Rating</option>
         </Select>
       </Flex>
-      <AnimatePresence>
-        {styles &&
-          !isLoading &&
-          (isCompact
-            ? styles.slice(0, 5).map(style => (
-                <TopElement
-                  key={style.style_name}
-                  data={{
-                    name: style.style_name,
-                    count: style.count,
-                    avgRating: style.avgRating,
-                  }}
-                  filter={filter}
-                />
-              ))
-            : styles.map(style => (
-                <TopElement
-                  key={style.style_name}
-                  data={{
-                    name: style.style_name,
-                    count: style.count,
-                    avgRating: style.avgRating,
-                  }}
-                  filter={filter}
-                />
-              )))}
-        {isLoading &&
-          Array.from(Array(5).keys()).map(style => (
-            <TopElement key={style} skeleton />
-          ))}
-      </AnimatePresence>
-      {isCompact && !isLoading && styles.length > 5 && (
+      <TopList
+        data={styles}
+        isLoading={isLoading}
+        isCompact={isCompact}
+        filter={filter}
+      />
+      {showButton && (
         <Button
           onClick={handleIsCompact}
           size="xs"

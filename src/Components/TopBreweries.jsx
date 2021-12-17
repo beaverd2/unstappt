@@ -1,20 +1,27 @@
 import React, { memo, useState, useEffect } from 'react';
 import { Flex, Heading } from '@chakra-ui/layout';
 import { Select, Button } from '@chakra-ui/react';
-import TopElement from './TopElement';
-import { AnimatePresence } from 'framer-motion';
+import TopList from './TopList/TopList';
 
 const TopBreweries = ({ beers, isLoading }) => {
   const [filter, setFilter] = useState('count');
   const [isCompact, setIsCompact] = useState(true);
   const [breweries, setBreweries] = useState([]);
 
+  const showButton = !isLoading && isCompact && breweries.length > 5;
+
   const handleSelect = e => {
     setFilter(e.target.value);
     e.target.value === 'count'
-      ? setBreweries(breweries.sort((a, b) => (a.count < b.count && 1) || -1))
+      ? setBreweries(
+          [...breweries].sort(
+            (a, b) => b.count - a.count || a.name.localeCompare(b.name)
+          )
+        )
       : setBreweries(
-          breweries.sort((a, b) => (a.avgRating < b.avgRating && 1) || -1)
+          [...breweries].sort(
+            (a, b) => b.avgRating - a.avgRating || a.name.localeCompare(b.name)
+          )
         );
   };
   const handleIsCompact = () => {
@@ -29,47 +36,38 @@ const TopBreweries = ({ beers, isLoading }) => {
         beers
           .map(beer => {
             return {
-              brewery_name: beer.brewery.brewery_name,
-              brewery_label: beer.brewery.brewery_label,
-              brewery_page_url: beer.brewery.brewery_page_url,
-              country_name: beer.brewery.country_name,
+              name: beer.brewery.brewery_name,
+              name2: beer.brewery.country_name,
+              img: beer.brewery.brewery_label,
+              url: beer.brewery.brewery_page_url,
               rating: beer.rating_score,
             };
           })
-          .reduce(
-            (
-              obj,
-              {
-                brewery_name,
-                brewery_label,
-                rating,
-                brewery_page_url,
-                country_name,
-              }
-            ) => {
-              if (obj[brewery_name] === undefined)
-                obj[brewery_name] = {
-                  brewery_name: brewery_name,
-                  brewery_label: brewery_label,
-                  brewery_page_url: brewery_page_url,
-                  country_name: country_name,
-                  sumRating: rating,
-                  avgRating: rating,
-                  count: 1,
-                };
-              else {
-                obj[brewery_name].count++;
-                obj[brewery_name].sumRating += rating;
-                obj[brewery_name].avgRating =
-                  obj[brewery_name].sumRating / obj[brewery_name].count;
-              }
-              return obj;
-            },
-            {}
-          )
+          .reduce((obj, { name, img, rating, url, name2 }) => {
+            if (obj[name] === undefined)
+              obj[name] = {
+                name: name,
+                name2: name2,
+                img: img,
+                url: url,
+                sumRating: rating,
+                avgRating: rating,
+                count: 1,
+              };
+            else {
+              obj[name].count++;
+              obj[name].sumRating += rating;
+              obj[name].avgRating = obj[name].sumRating / obj[name].count;
+            }
+            return obj;
+          }, {})
       );
 
-      setBreweries(breweries.sort((a, b) => (a.count < b.count && 1) || -1));
+      setBreweries(
+        breweries.sort(
+          (a, b) => b.count - a.count || a.name.localeCompare(b.name)
+        )
+      );
     }
   }, [beers]);
 
@@ -97,46 +95,14 @@ const TopBreweries = ({ beers, isLoading }) => {
           <option value="rating">By Rating</option>
         </Select>
       </Flex>
-      <AnimatePresence>
-        {breweries &&
-          !isLoading &&
-          (isCompact
-            ? breweries.slice(0, 5).map(brewery => (
-                <TopElement
-                  key={brewery.brewery_name}
-                  data={{
-                    img: brewery.brewery_label,
-                    name: brewery.brewery_name,
-                    count: brewery.count,
-                    avgRating: brewery.avgRating,
-                    url: brewery.brewery_page_url,
-                    country: brewery.country_name,
-                  }}
-                  filter={filter}
-                  type="brewery"
-                />
-              ))
-            : breweries.map(brewery => (
-                <TopElement
-                  key={brewery.brewery_name}
-                  data={{
-                    img: brewery.brewery_label,
-                    name: brewery.brewery_name,
-                    count: brewery.count,
-                    avgRating: brewery.avgRating,
-                    url: brewery.brewery_page_url,
-                    country: brewery.country_name,
-                  }}
-                  filter={filter}
-                  type="brewery"
-                />
-              )))}
-        {isLoading &&
-          Array.from(Array(5).keys()).map(brewery => (
-            <TopElement key={brewery} skeleton />
-          ))}
-      </AnimatePresence>
-      {!isLoading && isCompact && breweries.length > 5 && (
+      <TopList
+        data={breweries}
+        isLoading={isLoading}
+        isCompact={isCompact}
+        filter={filter}
+        hoverable
+      />
+      {showButton && (
         <Button
           onClick={handleIsCompact}
           size="xs"

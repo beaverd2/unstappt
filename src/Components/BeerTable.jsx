@@ -139,7 +139,7 @@ const BeerTable = ({ beers, isLoading, user }) => {
               prepareRow(row);
               return (
                 <Tr
-                  transition="0.1s"
+                  transition="0.2s"
                   _hover={{ bgColor: 'gray.100' }}
                   cursor="pointer"
                   {...row.getRowProps()}

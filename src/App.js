@@ -33,7 +33,6 @@ function App() {
   const [startDate, setStartDate] = useState(dayjs().subtract(7, 'days').$d);
   const [endDate, setEndDate] = useState(dayjs().$d);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(false);
   const auth = `&client_id=${process.env.REACT_APP_CLIENT_ID}&client_secret=${process.env.REACT_APP_CLIENT_SECRET}`;
 
   const fetchBeers = async url => {
@@ -78,7 +77,6 @@ function App() {
     );
     console.log('fetchAll', allBeers, user);
     if (user.message || allBeers.message) {
-      setError(user.message || allBeers.message);
       console.log(user.message || allBeers.message);
       Notification(user.message || allBeers.message);
     }
@@ -99,7 +97,6 @@ function App() {
       )}&end_date=${dayjs(endDate).format('YYYY-MM-DD')}`
     );
     if (allBeers.message) {
-      setError(allBeers.message);
       console.log(allBeers.message);
       Notification(user.message || allBeers.message);
     }

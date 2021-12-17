@@ -1,20 +1,27 @@
 import React, { memo, useState, useEffect } from 'react';
 import { Flex, Heading } from '@chakra-ui/layout';
 import { Select, Button } from '@chakra-ui/react';
-import TopElement from './TopElement';
-import { AnimatePresence } from 'framer-motion';
+import TopList from './TopList/TopList';
 
 const TopRegions = ({ beers, isLoading }) => {
   const [filter, setFilter] = useState('count');
   const [isCompact, setIsCompact] = useState(true);
   const [regions, setRegions] = useState([]);
 
+  const showButton = !isLoading && isCompact && regions.length > 5;
+
   const handleSelect = e => {
     setFilter(e.target.value);
     e.target.value === 'count'
-      ? setRegions(regions.sort((a, b) => (a.count < b.count && 1) || -1))
+      ? setRegions(
+          [...regions].sort(
+            (a, b) => b.count - a.count || a.name.localeCompare(b.name)
+          )
+        )
       : setRegions(
-          regions.sort((a, b) => (a.avgRating < b.avgRating && 1) || -1)
+          [...regions].sort(
+            (a, b) => b.avgRating - a.avgRating || a.name.localeCompare(b.name)
+          )
         );
   };
   const handleIsCompact = () => {
@@ -28,31 +35,34 @@ const TopRegions = ({ beers, isLoading }) => {
         beers
           .map(beer => {
             return {
-              region_name:
+              name:
                 beer.brewery.location.brewery_state === ''
                   ? 'Other'
                   : beer.brewery.location.brewery_state,
               rating: beer.rating_score,
             };
           })
-          .reduce((obj, { region_name, rating }) => {
-            if (obj[region_name] === undefined)
-              obj[region_name] = {
-                region_name: region_name,
+          .reduce((obj, { name, rating }) => {
+            if (obj[name] === undefined)
+              obj[name] = {
+                name: name,
                 sumRating: rating,
                 avgRating: rating,
                 count: 1,
               };
             else {
-              obj[region_name].count++;
-              obj[region_name].sumRating += rating;
-              obj[region_name].avgRating =
-                obj[region_name].sumRating / obj[region_name].count;
+              obj[name].count++;
+              obj[name].sumRating += rating;
+              obj[name].avgRating = obj[name].sumRating / obj[name].count;
             }
             return obj;
           }, {})
       );
-      setRegions(regions.sort((a, b) => (a.count < b.count && 1) || -1));
+      setRegions(
+        regions.sort(
+          (a, b) => b.count - a.count || a.name.localeCompare(b.name)
+        )
+      );
     }
   }, [beers]);
   console.log('regions', regions);
@@ -80,38 +90,13 @@ const TopRegions = ({ beers, isLoading }) => {
           <option value="rating">By Rating</option>
         </Select>
       </Flex>
-      <AnimatePresence>
-        {regions &&
-          !isLoading &&
-          (isCompact
-            ? regions.slice(0, 5).map(region => (
-                <TopElement
-                  key={region.region_name}
-                  data={{
-                    name: region.region_name,
-                    count: region.count,
-                    avgRating: region.avgRating,
-                  }}
-                  filter={filter}
-                />
-              ))
-            : regions.map(region => (
-                <TopElement
-                  key={region.region_name}
-                  data={{
-                    name: region.region_name,
-                    count: region.count,
-                    avgRating: region.avgRating,
-                  }}
-                  filter={filter}
-                />
-              )))}
-        {isLoading &&
-          Array.from(Array(5).keys()).map(region => (
-            <TopElement key={region} skeleton />
-          ))}
-      </AnimatePresence>
-      {!isLoading && isCompact && regions.length > 5 && (
+      <TopList
+        data={regions}
+        isLoading={isLoading}
+        isCompact={isCompact}
+        filter={filter}
+      />
+      {showButton > 5 && (
         <Button
           onClick={handleIsCompact}
           size="xs"
