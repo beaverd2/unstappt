@@ -15,7 +15,6 @@
     "chartjs-plugin-datalabels": "^2.0.0",
     "dayjs": "^1.10.7",
     "framer-motion": "^4.1.17",
-    "randomcolor": "^0.6.2",
     "react": "^17.0.2",
     "react-chartjs-2": "^4.0.0",
     "react-datepicker": "^4.4.0",
