@@ -63,7 +63,6 @@ const TopCountries = ({ beers, isLoading }) => {
       );
     }
   }, [beers]);
-  console.log('countries', countries);
   return (
     <Flex
       bgColor="white"

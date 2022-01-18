@@ -32,7 +32,6 @@ const TopBeers = ({ beersData, isLoading }) => {
     }
   }, [beersData]);
 
-  console.log('topbeers', beers);
   return (
     <Flex
       bgColor="white"

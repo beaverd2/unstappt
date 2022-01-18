@@ -3,7 +3,6 @@ import { AnimatePresence } from 'framer-motion';
 import TopElement from './TopElement';
 
 const TopList = ({ data, isLoading, isCompact, filter, hoverable }) => {
-  console.log('data', data);
   return (
     <>
       <AnimatePresence>

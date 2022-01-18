@@ -8,8 +8,6 @@ import { Table, Thead, Tbody, Tr, Th, Td, chakra } from '@chakra-ui/react';
 
 const Sessions = ({ beers, isLoading }) => {
   const [sessions, setSessions] = useState([]);
-  console.log('beers', beers);
-  console.log('sessions', sessions);
 
   useEffect(() => {
     if (beers) {

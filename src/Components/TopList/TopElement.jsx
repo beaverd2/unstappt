@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 
 const TopElement = ({ data, filter, skeleton, hoverable }) => {
   const MotionFlex = motion(Flex);
-  console.log('elemRender', data, hoverable);
 
   const openInNewTab = url => {
     const newWindow = window.open(

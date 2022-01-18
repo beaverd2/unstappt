@@ -5,7 +5,6 @@ import { ChevronRightIcon } from '@chakra-ui/icons';
 import { Skeleton, SkeletonCircle } from '@chakra-ui/react';
 
 const User = ({ user, isLoading }) => {
-  console.log('user');
   if (user && !isLoading) {
     return (
       <Flex mb={2} mt={4}>

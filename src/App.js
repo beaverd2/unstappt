@@ -10,7 +10,6 @@ import {
 import { createStandaloneToast } from '@chakra-ui/toast';
 import Header from './Components/Header';
 import User from './Components/User';
-import { beers1, user1 } from './MockApi';
 import DrinkingPattern from './Components/DrinkingPattern';
 import axios from 'axios';
 import TopBeers from './Components/TopBeers';
@@ -26,8 +25,6 @@ import TopCountries from './Components/TopCountries';
 import TopBreweries from './Components/TopBreweries';
 
 function App() {
-  // const [beers, setBeers] = useState(beers1.response.beers.items);
-  // const [user, setUser] = useState(user1.response.user);
   const [beers, setBeers] = useState(null);
   const [user, setUser] = useState(null);
   const [startDate, setStartDate] = useState(dayjs().subtract(7, 'days').$d);
@@ -75,9 +72,7 @@ function App() {
         'YYYY-MM-DD'
       )}&end_date=${now.format('YYYY-MM-DD')}`
     );
-    console.log('fetchAll', allBeers, user);
     if (user.message || allBeers.message) {
-      console.log(user.message || allBeers.message);
       Notification(user.message || allBeers.message);
     }
     if (!user.message && !allBeers.message) {
@@ -97,7 +92,6 @@ function App() {
       )}&end_date=${dayjs(endDate).format('YYYY-MM-DD')}`
     );
     if (allBeers.message) {
-      console.log(allBeers.message);
       Notification(user.message || allBeers.message);
     }
     if (!user.message && !allBeers.message) {

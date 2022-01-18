@@ -36,7 +36,6 @@ const Activity = ({ beers, startDate, endDate }) => {
     return dates;
   };
   const dataset = {};
-  console.log('Activity', startDate, endDate);
   getDatesBetweenDates(startDate, endDate)
     .map(date => dayjs(date).format('DD/MM/YYYY'))
     .forEach(date => (dataset[date] = 0));
@@ -52,8 +51,6 @@ const Activity = ({ beers, startDate, endDate }) => {
   const labels = Object.keys(dataset);
   const data = Object.values(dataset);
 
-  console.log('mapOfDates', mapOfDates);
-  console.log('dataset', dataset);
   return (
     <Line
       height={250}

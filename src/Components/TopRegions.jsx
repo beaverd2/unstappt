@@ -65,7 +65,6 @@ const TopRegions = ({ beers, isLoading }) => {
       );
     }
   }, [beers]);
-  console.log('regions', regions);
   return (
     <Flex
       bgColor="white"
