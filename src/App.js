@@ -43,15 +43,12 @@ function App() {
         let endpoints = [
           ...Array(Math.floor(data.total_count / 50)).keys(),
         ].map(key => fullUrl + '&offset=' + (key + 1) * 50);
-        console.log(endpoints);
         const allResponses = await axios.all(
           endpoints.map(endpoint => axios.get(endpoint))
         );
         const allBeers = allResponses
           .map(response => response.data.response.beers.items)
           .reduce((a, b) => a.concat(b), []);
-        console.log('allBeers', allBeers);
-        console.log('conc', beers.concat(allBeers));
         return beers.concat(allBeers);
       } else {
         return beers;
