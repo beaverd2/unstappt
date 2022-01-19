@@ -34,12 +34,25 @@ function App() {
 
   const fetchBeers = async url => {
     setIsLoading(true);
+    const fullUrl = url + auth;
     try {
-      const response = await axios.get(url + auth);
+      const response = await axios.get(fullUrl);
       const data = response.data.response;
       const beers = data.beers.items;
-      if (data.pagination.next_url) {
-        return beers.concat(await fetchBeers(data.pagination.next_url));
+      if (data.total_count > 50) {
+        let endpoints = [
+          ...Array(Math.floor(data.total_count / 50)).keys(),
+        ].map(key => fullUrl + '&offset=' + (key + 1) * 50);
+        console.log(endpoints);
+        const allResponses = await axios.all(
+          endpoints.map(endpoint => axios.get(endpoint))
+        );
+        const allBeers = allResponses
+          .map(response => response.data.response.beers.items)
+          .reduce((a, b) => a.concat(b), []);
+        console.log('allBeers', allBeers);
+        console.log('conc', beers.concat(allBeers));
+        return beers.concat(allBeers);
       } else {
         return beers;
       }
@@ -49,6 +62,7 @@ function App() {
       setIsLoading(false);
     }
   };
+
   const fetchUser = async username => {
     setIsLoading(true);
     try {
